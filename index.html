@@ -107,20 +107,24 @@
 
         // Scroll Intersection Observer
         const observerOptions = {
-            threshold: 0.5
+            threshold: 0.2 // 少し早めに読み込みを開始するように閾値を下げました
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
+                const wrapper = entry.target.querySelector('.image-wrapper');
+                const card = entry.target.querySelector('.message-card');
+
                 if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal');
+                    if (wrapper) wrapper.classList.add('reveal');
+                    if (card) card.classList.add('reveal');
+
                     // 動画がある場合は再生を開始
                     const video = entry.target.querySelector('video');
                     if (video) {
                         video.play().catch(e => console.log("Video play failed:", e));
                     }
                 } else {
-                    // 画面外に出たら一時停止して負荷を減らす
                     const video = entry.target.querySelector('video');
                     if (video) {
                         video.pause();
@@ -133,17 +137,16 @@
             observer.observe(el);
         });
 
-        // メッセージカード用のオブザーバー
-        const cardObserver = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal');
-                }
-            });
-        }, { threshold: 0.8 });
-
-        document.querySelectorAll('.message-card').forEach(el => {
-            cardObserver.observe(el);
+        // 画像の読み込みエラー対策
+        document.querySelectorAll('img').forEach(img => {
+            img.onload = function () {
+                console.log('Image loaded:', this.src);
+            };
+            img.onerror = function () {
+                console.error('Image failing to load:', this.src);
+                // 代わりの背景色などを設定することも可能
+                this.style.background = '#222';
+            };
         });
     </script>
 </body>
