@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday Micchan!</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="movie-container">
+        <!-- Scene 1: Intro -->
+        <section class="scene intro">
+            <div class="falling-stars" id="star-container"></div>
+            <div class="title-screen">
+                <p class="subtitle">Special Celebration</p>
+                <h1>Happy Birthday<br>Micchan</h1>
+                <p class="subtitle">2026.03.06</p>
+            </div>
+        </section>
+
+        <!-- Scene 2: Memory 1 -->
+        <section class="scene image-scene">
+            <div class="image-wrapper">
+                <img src="images/photo1.jpg" alt="Memory 1">
+                <div class="video-overlay"></div>
+            </div>
+            <div class="message-card">
+                <p>何気ない日常の瞬間が</p>
+            </div>
+        </section>
+
+        <!-- Scene 3: Memory 2 -->
+        <section class="scene image-scene">
+            <div class="image-wrapper">
+                <img src="images/photo2.jpg" alt="Memory 2">
+                <div class="video-overlay"></div>
+            </div>
+            <div class="message-card">
+                <p>かけがえのない思い出に変わる</p>
+            </div>
+        </section>
+
+        <!-- Scene 4: Memory 3 -->
+        <section class="scene image-scene">
+            <div class="image-wrapper">
+                <img src="images/photo3.jpg" alt="Memory 3">
+                <div class="video-overlay"></div>
+            </div>
+            <div class="message-card">
+                <p>いつも笑顔をありがとう</p>
+            </div>
+        </section>
+
+        <!-- Scene 5: Memory 4 -->
+        <section class="scene image-scene">
+            <div class="image-wrapper">
+                <video src="images/photo4.MP4" muted loop playsinline></video>
+                <div class="video-overlay"></div>
+            </div>
+            <div class="message-card">
+                <p>やすらぎのひとときも</p>
+            </div>
+        </section>
+
+        <!-- Scene 6: Memory 5 -->
+        <section class="scene image-scene">
+            <div class="image-wrapper">
+                <!-- .MOV形式はブラウザによって対応が分かれるため、type指定を追加 -->
+                <video muted loop playsinline>
+                    <source src="images/photo5.MOV" type="video/quicktime">
+                    <source src="images/photo5.MOV" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+                <div class="video-overlay"></div>
+            </div>
+            <div class="message-card">
+                <p>素敵な一年を共に</p>
+            </div>
+        </section>
+
+        <!-- Scene 7: Outro -->
+        <section class="scene outro">
+            <div class="big-text">
+                <p>Have a<br>Wonderful Year!</p>
+            </div>
+            <p class="footer-note">Produced by Antigravity</p>
+        </section>
+    </div>
+
+    <script>
+        // Star Background
+        const starContainer = document.getElementById('star-container');
+        for (let i = 0; i < 100; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            const size = Math.random() * 3 + 'px';
+            star.style.width = size;
+            star.style.height = size;
+            star.style.left = Math.random() * 100 + '%';
+            star.style.animationDuration = Math.random() * 3 + 2 + 's';
+            star.style.animationDelay = Math.random() * 5 + 's';
+            starContainer.appendChild(star);
+        }
+
+        // Scroll Intersection Observer
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                    // 動画がある場合は再生を開始
+                    const video = entry.target.querySelector('video');
+                    if (video) {
+                        video.play().catch(e => console.log("Video play failed:", e));
+                    }
+                } else {
+                    // 画面外に出たら一時停止して負荷を減らす
+                    const video = entry.target.querySelector('video');
+                    if (video) {
+                        video.pause();
+                    }
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.image-scene').forEach(el => {
+            observer.observe(el);
+        });
+
+        // メッセージカード用のオブザーバー
+        const cardObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, { threshold: 0.8 });
+
+        document.querySelectorAll('.message-card').forEach(el => {
+            cardObserver.observe(el);
+        });
+    </script>
+</body>
+
+</html>
